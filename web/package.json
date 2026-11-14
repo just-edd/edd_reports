@@ -1,8 +1,12 @@
 {
   "name": "web",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
+  "description": "This template should help get you started developing with Svelte and TypeScript in Vite.",
+  "license": "ISC",
+  "author": "",
   "type": "module",
+  "main": "svelte.config.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

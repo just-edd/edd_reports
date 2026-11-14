@@ -1,16 +1,8 @@
 <script lang="ts">
-import { useNuiEvent } from '$lib/hooks/useNuiEvents';
-import { setLocale } from '$lib/store/locale';
-import { isEnvBrowser } from '$lib/utils/misc';
-import { t } from '$lib/store/locale';
-import '$lib/debug/mock';
-import Categories from '$lib/components/Categories.svelte';
+import { isEnvBrowser } from "$lib/utils/misc";
+import { fade } from "svelte/transition";
 
-useNuiEvent<{
-    locale: { [key: string]: string };
-}>('init', ({ locale }) => {
-    setLocale(locale);
-});
+let visible = $state(true);
 
 if (isEnvBrowser()) {
     const root = document.getElementById('app');
@@ -22,52 +14,71 @@ if (isEnvBrowser()) {
     root!.style.backgroundPosition = 'center';
 }
 
-function onKeyDown(event: KeyboardEvent) {
-    const key = event.key.toLowerCase();
-
-    switch (key) {
-        // Key handlers
-    }
-}
+let selectedCategory: string = $state('player');
+let reportCategories: { label: string, icon: string, id: string }[] = [
+    { label: 'Player', icon: 'hgi-user-03', id: 'player' },
+    { label: 'Bug', icon: 'hgi-bug-01', id: 'bug' },
+    { label: 'Question', icon: 'hgi-message-circle-question-mark', id: 'question' }
+]
+let selectedIndex = $derived(
+    reportCategories.findIndex((c) => c.id === selectedCategory)
+);
 </script>
 
-<!-- Main container for report system -->
-<div class="container bevel flex flex-col gap-3" style="--bevel: 12px;">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-white font-bold text-xl uppercase font-[Montserrat]">{$t('new_report')}</h1>
-            <p class="text-zinc-500 text-sm">{$t('report_description')}</p>
-        </div>
-        <div class="relative flex items-center gap-2 p-0.5 text-sm text-zinc-400
-            before:absolute before:inset-0 before:-z-10 before:-skew-x-[20deg] before:bg-white/10">
-            <p class="relative px-1.5 before:absolute before:inset-0 before:-z-10 before:-skew-x-[20deg] before:bg-white/15">ESC</p>
-            <div class="px-1.5 flex items-center gap-1">
-                <i class="hgi hgi-stroke hgi-rounded hgi-square-arrow-right-exit"></i>
-                {$t('exit')}
+{#if visible}
+    <div class="wrapper" transition:fade>
+        <div class="flex flex-col justify-center absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 gap-3 w-[600px]">
+            <div>
+                <h1 class="text-4xl font-semibold leading-none">REPORT <span class="gradient-title">SYSTEM</span></h1>
+                <p class="text-[17px] text-gray-300 leading-none">Need help? Feel free to contact us via this form.</p>
             </div>
+            
+            <div class="w-4/5 h-1 bg-white/25 -skew-x-[45deg]"></div>
+
+            <div class="p-1 bg-white/20 -skew-x-[15deg] relative flex items-center">
+                <div
+                    class="absolute top-1 bottom-1 left-1 bg-gradient-to-br from-[#caf388a0] to-[#84cc16a0]
+                        transition-transform duration-300 ease-out"
+                    style="width: calc((100% - 0.5rem) / {reportCategories.length});
+                        transform: translateX({selectedIndex * 100}%);"
+                ></div>
+
+                {#each reportCategories as category}
+                    <button class="relative z-10 flex items-center gap-2 w-full justify-center py-1 font-medium"
+                    onclick={() => selectedCategory = category.id}>
+                        <i class="hgi hgi-stroke hgi-rounded {category.icon} skew-x-[15deg] will-change-transform [backface-visibility:hidden] antialiased"></i>
+                        <p class="skew-x-[15deg] will-change-transform [backface-visibility:hidden] antialiased">{category.label}</p>
+                    </button>
+                {/each}
+            </div>
+
+            <div>
+                <p class="text-lg">Title</p>
+                <div class="bg-white/15 -skew-x-[15deg]">
+                    <input 
+                        type="text" 
+                        class="w-full h-full bg-transparent focus:outline-none px-2.5 py-2 placeholder:text-gray-300 skew-x-[15deg]" 
+                        placeholder="What is your problem?"
+                    >
+                </div>
+            </div>
+
+            <div>
+                <p class="text-lg">Description</p>
+                <div class="bg-white/15 rounded-sm">
+                    <textarea
+                        rows="5"
+                        class="w-full h-full bg-transparent focus:outline-none px-2.5 py-2 placeholder:text-gray-300 resize-none" 
+                        placeholder="Tell us more about your problem..."
+                        
+                    ></textarea>
+                </div>
+            </div>
+
+            <button class="bg-white/15 py-2 hover:bg-gradient-to-br from-[#caf388a0] to-[#84cc16a0] flex items-center justify-center gap-2">
+                <i class="hgi hgi-stroke hgi-rounded hgi-send"></i>
+                <p>Send report</p>
+            </button>
         </div>
     </div>
-
-    <Categories />
-
-    <div class="flex flex-col gap-1.5">
-        <p class="text-white text-sm bevel px-2 bg-white/10 w-fit " style="--bevel: 6px">{$t('title')}</p>
-        <input type="text" placeholder="{$t('title_placeholder')}" 
-            class="w-full py-2 px-3 bevel bg-black/35 text-white text-sm placeholder:text-zinc-400 font-[Roboto]" 
-            style="--bevel: 7px"
-        />
-    </div>
-
-    <div class="flex flex-col gap-1.5 ">
-        <p class="text-white text-sm bevel px-2 bg-white/10 w-fit" style="--bevel: 6px">{$t('description')}</p>
-        <textarea placeholder="{$t('description_placeholder')}" rows="5" 
-            class="w-full py-2 px-3 bevel bg-black/35 text-white text-sm placeholder:text-zinc-400 resize-none font-[Roboto]" 
-            style="--bevel: 7px"
-        ></textarea>
-    </div>
-
-    <button class="flex items-center justify-center gap-2 text-black bg-white bevel py-1 mt-2 hover:bg-white/80 duration-200" style="--bevel: 5px">
-        <i class="hgi hgi-stroke hgi-rounded hgi-send"></i>
-        <p class="font-[Roboto] text-[15px]">{$t('create_report')}</p>
-    </button>
-</div>
+{/if}
