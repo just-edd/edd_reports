@@ -42,9 +42,86 @@ body {
 }
 
 .gradient-title {
-  background: linear-gradient(135deg, #caf388, #84cc16);
+  background: linear-gradient(135deg, #8acf22, #caf388);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
+
+.bevel {
+  --bevel: 12px;
+  clip-path: polygon(
+    var(--bevel) 0,
+    calc(100% - var(--bevel)) 0,
+    100% var(--bevel),
+    100% calc(100% - var(--bevel)),
+    calc(100% - var(--bevel)) 100%,
+    var(--bevel) 100%,
+    0 calc(100% - var(--bevel)),
+    0 var(--bevel)
+  );
+}
+
+.bevel-top {
+  clip-path: polygon(
+    var(--bevel) 0,
+    calc(100% - var(--bevel)) 0,
+    100% var(--bevel),
+    100% 100%,
+    0 100%,
+    0 var(--bevel)
+  );
+}
+
+.bevel-bottom {
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--bevel)),
+    calc(100% - var(--bevel)) 100%,
+    var(--bevel) 100%,
+    0 calc(100% - var(--bevel))
+  );
+}
+
+.category-slider.last {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--bevel)) 0,
+    100% var(--bevel),
+    100% 100%,
+    0 100%
+  );
+}
+
+.category-slider.first {
+  clip-path: polygon(
+    var(--bevel) 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 var(--bevel)
+  );
+}
+
+.bevel-tl,
+.bevel-tr,
+.bevel-br,
+.bevel-bl {
+  clip-path: polygon(
+    var(--tl, 0px) 0,
+    calc(100% - var(--tr, 0px)) 0,
+    100% var(--tr, 0px),
+    100% calc(100% - var(--br, 0px)),
+    calc(100% - var(--br, 0px)) 100%,
+    var(--bl, 0px) 100%,
+    0 calc(100% - var(--bl, 0px)),
+    0 var(--tl, 0px)
+  );
+}
+
+.bevel-tl { --tl: var(--bevel, 12px); }
+.bevel-tr { --tr: var(--bevel, 12px); }
+.bevel-br { --br: var(--bevel, 12px); }
+.bevel-bl { --bl: var(--bevel, 12px); }
