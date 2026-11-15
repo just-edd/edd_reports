@@ -125,3 +125,7 @@ body {
 .bevel-tr { --tr: var(--bevel, 12px); }
 .bevel-br { --br: var(--bevel, 12px); }
 .bevel-bl { --bl: var(--bevel, 12px); }
+
+::-webkit-scrollbar {
+  width: 0;
+}

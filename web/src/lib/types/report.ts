@@ -10,4 +10,6 @@ export interface ReportData {
     createdAt: number; // ms timestamp
     createdBy: string;
     messages?: Message[];
+    closed?: boolean;
+    claimedBy?: string;
 }
