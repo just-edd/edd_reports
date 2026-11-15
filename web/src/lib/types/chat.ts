@@ -1,8 +1,8 @@
-export type Message = {
-    id: number;
+export interface Message {
     author: string;
-    isStaff: boolean;
-    isMine: boolean;
     text: string;
-    time: string;
+    isStaff?: boolean;
+    role?: string;
+    isMine?: boolean;
+    time: number; // '15.11.2026 14:35'
 };
