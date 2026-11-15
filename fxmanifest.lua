@@ -8,25 +8,18 @@ description 'Advanced report system'
 version '1.0.0'
 
 files {
-    'locales/*.json'
+    'locales/*.json',
+    'web/dist/**'
 }
+
+ui_page 'web/dist/index.html'
 
 shared_scripts {
     '@ox_lib/init.lua',
     'config/config.lua'
 }
 
-client_scripts {
-    'framework/**/client.lua',
-    'utils/cl_main.lua',
-    'config/cl_edit.lua',
-    'client/*.lua'
-}
-
 server_scripts {
-    'framework/**/server.lua',
     '@oxmysql/lib/MySQL.lua',
-    'utils/sv_main.lua',
-    'config/sv_config.lua',
     'server/*.lua'
 }

@@ -4,6 +4,7 @@ import type { Message } from "$lib/types/chat";
 import type { ReportData } from "$lib/types/report";
 import { fetchNui } from "$lib/utils/fetchNui";
 import { tick } from "svelte";
+import { fade } from "svelte/transition";
 
 let { report }: { report: ReportData } = $props();
 
@@ -12,13 +13,31 @@ let input: string = $state('');
 let list: HTMLDivElement;
 let sending = $state(false);
 
-async function scrollDown(smooth = true) {
-    await tick();
-    list?.scrollTo({ top: list.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
-}
+$effect(() => {
+    messages = [...(report.messages ?? [])];
+    scrollDown(false);
+});
+
+useNuiEvent<{ reportId: number; message: Message }>('new_message', ({ reportId, message }) => {
+    if (reportId !== report.reportId) return;
+    messages.push(message);
+    scrollDown();
+});
 
 async function send() {
-    
+    const text = input.trim();
+    if (!text || sending) return;
+
+    sending = true;
+    input = '';
+
+    try {
+        await fetchNui('send_message', { reportId: report.reportId, text });
+    } catch {
+        input = text; // restore so the player doesn't lose it
+    } finally {
+        sending = false;
+    }
 }
 
 // Helper functions for UI chat bubbles
@@ -31,6 +50,11 @@ function bevels(msg: Message, i: number, total: number) {
         first && (msg.isMine ? 'bevel-tr' : 'bevel-tl'),
         last && (msg.isMine ? 'bevel-br' : 'bevel-bl')
     ].filter(Boolean).join(' ');
+}
+
+async function scrollDown(smooth = true) {
+    await tick();
+    list?.scrollTo({ top: list.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
 }
 
 function formatTime(timestamp: number) {
@@ -62,7 +86,7 @@ function formatTime(timestamp: number) {
 
     <div class="w-4/5 h-1 bg-white/25 -skew-x-[45deg]"></div>
 
-    <div class="bg-white/15 h-full bevel-top p-3 flex flex-col gap-2 overflow-y-auto" bind:this={list}>
+    <div class="bg-white/15 h-full bevel-top p-3 flex flex-col gap-2 overflow-y-auto relative" bind:this={list}>
         {#each messages as msg, index}
             <div 
                 class="flex flex-col max-w-[80%] w-fit bg-black/65 px-3 py-1.5 chat-box {msg.isMine ? "self-end items-end" : "self-start items-start"}
@@ -86,6 +110,13 @@ function formatTime(timestamp: number) {
                 <p class="break-words leading-tight">{msg.text}</p>
             </div>
         {/each}
+
+        {#if messages.length === 0}
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3 text-3xl text-gray-300" transition:fade>
+                <i class="hgi hgi-stroke hgi-rounded hgi-signal text-4xl"></i>
+                <p>No messages</p>
+            </div>
+        {/if}
     </div>
 
     <div class="bg-white/15 bevel-bottom px-4 py-2">

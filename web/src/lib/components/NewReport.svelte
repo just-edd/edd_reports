@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { ReportData } from "$lib/types/report";
+import { cn } from "$lib/utils";
 import { fetchNui } from "$lib/utils/fetchNui";
 import { scale } from "svelte/transition";
 
@@ -36,9 +37,7 @@ async function createReport() {
     };
 
     const report = await fetchNui<ReportData>('create_report', payload, {
-        data: { ...payload, createdAt: Math.floor(Date.now() / 1000), reportId: Math.floor(Math.random() * (1000 - 1 + 1)) + 1 , createdBy: 'johhn',
-            messages: [{ author: 'SERVER', isStaff: true, isMine: false, text: "Admin team will get to you as soon as possible. Please wait until then.", time: Math.floor(Date.now() / 1000) }]
-        }
+        data: { ...payload, createdAt: Math.floor(Date.now() / 1000), reportId: Math.floor(Math.random() * (1000 - 1 + 1)) + 1 , createdBy: 'johhn' }
     });
 
     if (report?.reportId != null) oncreated(report);
@@ -149,7 +148,7 @@ async function deleteReport() {
     </div>
 
     <div class="w-full bg-white/15 flex items-center justify-center bevel-bottom p-1">
-        <button class="py-2 hover:bg-gradient-to-br from-[{report !== null ? '#fca5a5a0' : '#caf388a0'}] to-[{report !== null ? '#ef4444a0' : '#84cc16a0'}] flex items-center justify-center gap-2 w-full bevel-bottom"
+        <button class={cn("py-2 flex items-center justify-center gap-2 w-full bevel-bottom hover:bg-gradient-to-br", report !== null ? "from-[#fca5a5a0] to-[#ef4444a0]" : "from-[#caf388a0] to-[#84cc16a0]")}
             onclick={report !== null ? deleteReport : createReport}>
             <i class="hgi hgi-stroke hgi-rounded {report !== null ? 'hgi-trash' : 'hgi-send'}"></i>
             <p>{report !== null ? 'Delete report' : 'Send report'}</p>
