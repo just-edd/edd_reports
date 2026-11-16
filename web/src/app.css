@@ -34,7 +34,7 @@ body {
 .wrapper {
   height: 100%;
   width: 100%;
-  background: radial-gradient(#00000050, #020617);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -51,81 +51,37 @@ body {
 
 .bevel {
   --bevel: 12px;
+  --inner: calc(var(--bevel) + 1px * 0.4142);
   clip-path: polygon(
+    var(--bevel) 0, calc(100% - var(--bevel)) 0,
+    100% var(--bevel), 100% calc(100% - var(--bevel)),
+    calc(100% - var(--bevel)) 100%, var(--bevel) 100%,
+    0 calc(100% - var(--bevel)), 0 var(--bevel)
+  );
+}
+
+.bevel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--border-color, transparent);
+  clip-path: polygon(evenodd,
+    /* vonkajší tvar */
+    var(--bevel) 0, calc(100% - var(--bevel)) 0,
+    100% var(--bevel), 100% calc(100% - var(--bevel)),
+    calc(100% - var(--bevel)) 100%, var(--bevel) 100%,
+    0 calc(100% - var(--bevel)), 0 var(--bevel),
     var(--bevel) 0,
-    calc(100% - var(--bevel)) 0,
-    100% var(--bevel),
-    100% calc(100% - var(--bevel)),
-    calc(100% - var(--bevel)) 100%,
-    var(--bevel) 100%,
-    0 calc(100% - var(--bevel)),
-    0 var(--bevel)
+    /* vnútorný tvar (diera) */
+    var(--inner) 1px,
+    calc(100% - var(--inner)) 1px,
+    calc(100% - 1px) var(--inner),
+    calc(100% - 1px) calc(100% - var(--inner)),
+    calc(100% - var(--inner)) calc(100% - 1px),
+    var(--inner) calc(100% - 1px),
+    1px calc(100% - var(--inner)),
+    1px var(--inner),
+    var(--inner) 1px
   );
-}
-
-.bevel-top {
-  clip-path: polygon(
-    var(--bevel) 0,
-    calc(100% - var(--bevel)) 0,
-    100% var(--bevel),
-    100% 100%,
-    0 100%,
-    0 var(--bevel)
-  );
-}
-
-.bevel-bottom {
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    100% calc(100% - var(--bevel)),
-    calc(100% - var(--bevel)) 100%,
-    var(--bevel) 100%,
-    0 calc(100% - var(--bevel))
-  );
-}
-
-.category-slider.last {
-  clip-path: polygon(
-    0 0,
-    calc(100% - var(--bevel)) 0,
-    100% var(--bevel),
-    100% 100%,
-    0 100%
-  );
-}
-
-.category-slider.first {
-  clip-path: polygon(
-    var(--bevel) 0,
-    100% 0,
-    100% 100%,
-    0 100%,
-    0 var(--bevel)
-  );
-}
-
-.bevel-tl,
-.bevel-tr,
-.bevel-br,
-.bevel-bl {
-  clip-path: polygon(
-    var(--tl, 0px) 0,
-    calc(100% - var(--tr, 0px)) 0,
-    100% var(--tr, 0px),
-    100% calc(100% - var(--br, 0px)),
-    calc(100% - var(--br, 0px)) 100%,
-    var(--bl, 0px) 100%,
-    0 calc(100% - var(--bl, 0px)),
-    0 var(--tl, 0px)
-  );
-}
-
-.bevel-tl { --tl: var(--bevel, 12px); }
-.bevel-tr { --tr: var(--bevel, 12px); }
-.bevel-br { --br: var(--bevel, 12px); }
-.bevel-bl { --bl: var(--bevel, 12px); }
-
-::-webkit-scrollbar {
-  width: 0;
 }
